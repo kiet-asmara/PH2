@@ -1,0 +1,3 @@
+Dengan channel unbuffered kedua fungsi harus siap sebelum channel dapat berkomunikasi. Maka, channel tersebut akan blocking ketika kedua fungsi belum siap. 
+
+Channel buffered tidak akan blocking sesuai dengan ukurannya yaitu 5. Ketika sudah menerima 5 pesan, channel akan blocking karena penuh dan blocking sampai pesan sebelumnya dikirim dan tersedia tempat untuk pesan baru. Channel buffered lebih cepat dari unbuffered.
