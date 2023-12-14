@@ -1,0 +1,331 @@
+openapi: "3.0.2"
+info:
+  title: "Avengers REST API"
+  description: "API Documentation"
+  version: "1.0"
+  contact:
+    name: "Kiet Asmara"
+    email: "kiet123pascal@gmail.com"
+servers:
+  - url: "http://localhost:3000"
+    description: "development server"
+tags:
+  - name: Crime
+    description: Crime data
+  - name: Hero
+    description: Hero data
+  - name: Villain
+    description: Villain data
+paths:
+  "/crimes":
+    get:
+      tags:
+        - Crime
+      summary: "get all crimes"
+      description: "get all crimes from database"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crime"
+    post:
+      tags:
+        - Crime
+      summary: "creates a crime"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Crime"
+      responses:
+        "201":
+          description: "crime record created"
+  "/crimes/{id}":
+    get:
+      tags:
+        - Crime
+      summary: "get crime by id"
+      description: "get crime from database by id"
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crime"
+        "404":
+          description: "crime with id not found"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "crime with id not found"
+    put:
+      tags:
+        - Crime
+      summary: "update crime"
+      description: "update crime by id"
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrimeNoId"
+      responses:
+        "202":
+          description: "crime record updated"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrimeNoId"
+        "404":
+          description: "crime with id not found"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "crime with id not found"
+        "500":
+          description: "error internal server error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "error internal server error"
+    delete:
+      tags:
+        - Crime
+      summary: "delete crime"
+      description: "delete crime by id"
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "203":
+          description: "crime record deleted"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crime"
+        "404":
+          description: "crime with id not found"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "crime with id not found"
+        "500":
+          description: "error internal server error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "error internal server error"
+  "/heroes":
+    get:
+      tags:
+        - Hero
+      summary: "get all heroes"
+      description: "get all heroes from database"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hero"
+  "/heroes/{id}":
+    get:
+      tags:
+        - Hero
+      summary: "get hero by id"
+      description: "get hero from database by id"
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hero"
+        "404":
+          description: "hero with id not found"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "hero with id not found"
+  "/villains":
+    get:
+      tags:
+        - Villain
+      summary: "get all villains"
+      description: "get all villains from database"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Villain"
+  "/villains/{id}":
+    get:
+      tags:
+        - Villain
+      summary: "get villain by id"
+      description: "get villain from database by id"
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Villain"
+        "404":
+          description: "villain with id not found"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: string
+              example:
+                error:
+                  message: "villain with id not found"
+components:
+  parameters:
+    PathId:
+      name: id
+      in: "path"
+      required: true
+      schema:
+        type: "number"
+  schemas:
+    Crime:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        heroid:
+          type: integer
+          example: 3
+        villainid:
+          type: integer
+          example: 2
+        description:
+          type: string
+          example: "Batman vs Joker"
+        crimetime:
+          type: string
+          example: "2023-11-11 11:12:01"
+      required:
+        - id
+        - heroid
+        - villainid
+        - description
+        - crimetime
+    CrimeNoId:
+      type: object
+      properties:
+        heroid:
+          type: integer
+          example: 3
+        villainid:
+          type: integer
+          example: 2
+        description:
+          type: string
+          example: "Batman vs Joker"
+        crimetime:
+          type: string
+          example: "2023-11-11 11:12:01"
+      required:
+        - heroid
+        - villainid
+        - description
+        - crimetime
+    Hero:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        name:
+          type: string
+          example: "Batman"
+        universe:
+          type: string
+          example: "DC"
+        skill:
+          type: string
+          example: "Money, Batmobile"
+        imageurl:
+          type: string
+          example: "batman.jpg"
+      required:
+        - id
+        - name
+        - universe
+        - skill
+        - imageurl
+    Villain:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        name:
+          type: string
+          example: "Batman"
+        universe:
+          type: string
+          example: "DC"
+        imageurl:
+          type: string
+          example: "batman.jpg"
+      required:
+        - id
+        - name
+        - universe
+        - imageurl
