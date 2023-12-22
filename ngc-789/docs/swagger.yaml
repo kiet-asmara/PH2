@@ -1,0 +1,116 @@
+definitions:
+  entity.Product:
+    properties:
+      description:
+        description: |-
+          Extensions:
+          x-order: "2"
+        minLength: 50
+        type: string
+      image_url:
+        type: string
+      name:
+        description: |-
+          Extensions:
+          x-order: "1"
+        example: John
+        type: string
+      price:
+        minimum: 1000
+        type: integer
+      product_id:
+        description: |-
+          in:body
+          Extensions:
+          x-order: "0"
+        example: 1
+        type: integer
+      stores:
+        items:
+          $ref: '#/definitions/entity.Store'
+        type: array
+    required:
+    - description
+    - image_url
+    - name
+    - price
+    type: object
+  entity.Store:
+    properties:
+      password:
+        minLength: 8
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+      store_email:
+        type: string
+      store_id:
+        type: integer
+      store_name:
+        maxLength: 15
+        minLength: 6
+        type: string
+      store_type:
+        enum:
+        - silver
+        - gold
+        - platinum
+        type: string
+    required:
+    - password
+    - store_email
+    - store_name
+    type: object
+  utils.APIError:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  utils.APIErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/utils.APIError'
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: Kiet Asmara
+    url: http://www.swagger.io/support
+  description: E-commerce REST API
+  termsOfService: http://swagger.io/terms/
+  title: Groot CMS
+  version: "1.0"
+paths:
+  /products:
+    post:
+      consumes:
+      - application/json
+      description: Add a new product
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.APIErrorResponse'
+      summary: Add Product
+      tags:
+      - Products
+securityDefinitions:
+  JWT:
+    in: header
+    name: token
+    type: apiKey
+swagger: "2.0"
