@@ -17,7 +17,7 @@ func GetStores(c echo.Context) error {
 
 	err := config.DB.Model(&model.Store{}).Find(&stores).Error
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return c.JSON(http.StatusOK, stores)
@@ -32,14 +32,14 @@ func GetStoreByID(c echo.Context) error {
 	// query db
 	rows := config.DB.First(&store, id)
 	if rows.Error != nil {
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	// get weather from API
 	body, err := GetWeather(store.Latitude, store.Longitude)
 	if err != nil {
 		fmt.Println(err)
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{

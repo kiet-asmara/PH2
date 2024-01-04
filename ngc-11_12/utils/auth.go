@@ -12,11 +12,11 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		authToken := c.Request().Header.Get("Authorization")
 
 		if authToken == "" {
-			return c.JSON(http.StatusUnauthorized, "Auth token is empty")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Auth token is empty")
 		}
 
 		if err := helpers.ValidateToken(authToken); err != nil {
-			return c.JSON(http.StatusUnauthorized, "Invalid auth token")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid auth token")
 		}
 
 		return next(c)

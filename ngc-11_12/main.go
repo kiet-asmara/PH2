@@ -1,31 +1,29 @@
 package main
 
 import (
-	"log"
 	"ngc-11/config"
 	"ngc-11/handlers"
 	"ngc-11/utils"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
-// register login get products post transactions
-
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	e := echo.New()
 
-	err = config.InitDB()
+	err := config.InitDB()
 	if err != nil {
 		e.Logger.Fatal("failed db", err)
 	}
-	e.Use(middleware.Logger())
+
+	err = godotenv.Load()
+	if err != nil {
+		e.Logger.Fatal("Error loading .env file")
+	}
+	e.HTTPErrorHandler = utils.ErrorHandler
+
+	e.Use(utils.MiddlewareLogging)
 
 	user := e.Group("/users")
 	user.POST("/register", handlers.Register)

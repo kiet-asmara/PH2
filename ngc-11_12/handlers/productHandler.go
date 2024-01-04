@@ -14,7 +14,7 @@ func GetProducts(c echo.Context) error {
 
 	err := config.DB.Model(&model.Product{}).Find(&products).Error
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	return c.JSON(http.StatusOK, products)
@@ -25,33 +25,33 @@ func BuyProduct(c echo.Context) error {
 	var trInput model.TransactionInput
 	err := c.Bind(&trInput)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid input")
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid input")
 	}
 
 	// get user id
 	id, err := helpers.GetUserId(c)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	// get user info
 	var user model.User
 	err = config.DB.First(&user, id).Error
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Internal server error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Internal server error")
 	}
 
 	// get product info
 	var product model.Product
 	err = config.DB.First(&product, trInput.Product_id).Error
 	if err != nil {
-		return c.JSON(http.StatusNotFound, "Product not found")
+		return echo.NewHTTPError(http.StatusNotFound, "Product not found")
 	}
 	if product.Stock < trInput.Quantity {
-		return c.JSON(http.StatusBadRequest, "Insufficient stock")
+		return echo.NewHTTPError(http.StatusBadRequest, "Insufficient stock")
 	}
 	if user.Deposit_amount < product.Price*float32(trInput.Quantity) {
-		return c.JSON(http.StatusBadRequest, "Insufficient funds")
+		return echo.NewHTTPError(http.StatusBadRequest, "Insufficient funds")
 	}
 
 	// transaction
@@ -61,14 +61,14 @@ func BuyProduct(c echo.Context) error {
 	err = tx.Model(&user).Update("deposit_amount", user.Deposit_amount-product.Price*float32(trInput.Quantity)).Error
 	if err != nil {
 		tx.Rollback()
-		return c.JSON(http.StatusInternalServerError, "Failed to update deposit")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update deposit")
 	}
 
 	// reduce stock
 	err = tx.Model(&product).Update("stock", product.Stock-trInput.Quantity).Error
 	if err != nil {
 		tx.Rollback()
-		return c.JSON(http.StatusInternalServerError, "Failed to update stock")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to update stock")
 	}
 
 	// record transaction
@@ -82,7 +82,7 @@ func BuyProduct(c echo.Context) error {
 	err = tx.Create(&tr).Error
 	if err != nil {
 		tx.Rollback()
-		return c.JSON(http.StatusInternalServerError, "Failed to record transaction")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to record transaction")
 	}
 
 	tx.Commit()
