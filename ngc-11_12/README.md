@@ -1,0 +1,2 @@
+- Error handling dalam echo sepertinya lebih sederhana karena handlernya langsung me-return error. Mungkin untuk sistem besar lebih praktis pakai Gin karena error gin bisa dikumpulkan baru di handle.
+- Syntax echo lebih sederhana
