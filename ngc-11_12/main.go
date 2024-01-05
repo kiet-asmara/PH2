@@ -7,20 +7,37 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
+	_ "github.com/swaggo/echo-swagger/example/docs"
 )
 
+// @title Avengers Ecommerce API
+// @version 1.0
+// @description Buy products from stores.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host petstore.swagger.io
+// @BasePath /v2
 func main() {
 	e := echo.New()
 
-	err := config.InitDB()
+	err := godotenv.Load()
+	if err != nil {
+		e.Logger.Fatal("Error loading .env file")
+	}
+
+	err = config.InitDB()
 	if err != nil {
 		e.Logger.Fatal("failed db", err)
 	}
 
-	err = godotenv.Load()
-	if err != nil {
-		e.Logger.Fatal("Error loading .env file")
-	}
 	e.HTTPErrorHandler = utils.ErrorHandler
 
 	e.Use(utils.MiddlewareLogging)
@@ -33,6 +50,8 @@ func main() {
 	e.GET("/stores", handlers.GetStores)
 	e.GET("/stores/:id", handlers.GetStoreByID)
 	e.POST("/transactions", handlers.BuyProduct, utils.AuthMiddleware)
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
